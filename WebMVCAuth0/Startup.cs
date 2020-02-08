@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
@@ -47,12 +48,6 @@ namespace WebMVCAuth0
             .AddOpenIdConnect("Auth0", options =>
             {
 
-                // Set the correct name claim type
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    NameClaimType = "name"
-                };
-
                 // Set the authority to your Auth0 domain
                 options.Authority = $"https://{Configuration["Auth0:Domain"]}";
 
@@ -78,14 +73,21 @@ namespace WebMVCAuth0
                 // Saves tokens to the AuthenticationProperties
                 options.SaveTokens = true;
 
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     NameClaimType = "name",
                     RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/roles"
                 };
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "name",
+                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/permissions"
+                };
 
                 options.Events = new OpenIdConnectEvents
                 {
+
                     OnRedirectToIdentityProvider = context =>
                     {
                         context.ProtocolMessage.SetParameter("audience", @"https://demo/api");

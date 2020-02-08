@@ -24,44 +24,30 @@ namespace WebMVCAuth0.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        [Authorize(Roles = "create:messages")]
+        public IActionResult Create()
         {
             return View();
         }
 
-        public IActionResult Public()
+        [Authorize(Roles = "read:messages")]
+        public IActionResult Read()
         {
-            ViewData["Message"] = "Hello from a public endpoint! You don't need to be authenticated to see this.";
             return View();
         }
 
-        [Authorize]
-        public IActionResult Private()
+        [Authorize(Roles = "edit:messages")]
+        public IActionResult Edit()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                string sUserId = User.Claims.Last()?.Value;
-
-
-                //Task<Auth0.ManagementApi.Models.User> _taskUserInfo = GetUserInformationAsync(sUserId);
-            }
-            ViewData["Message"] = "Hello from a private endpoint! You need to be authenticated to see this.";
-        return View();
-        }
-
-        [Authorize(Roles = "Editor")]
-        public IActionResult Editor()
-        {
-            ViewData["Message"] = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.";
-           return View();
-        }
-
-        [Authorize(Roles = "guest")]
-        public IActionResult Guest()
-        {
-            ViewData["Message"] = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.";
             return View();
         }
+
+        [Authorize(Roles = "delete:messages")]
+        public IActionResult Delete()
+        {
+            return View();
+        }
+
 
         // This is a helper action. It allows you to easily view all the claims of the token.
         public IActionResult Claims()
@@ -76,10 +62,10 @@ namespace WebMVCAuth0.Controllers
             return Json(c);
         }
 
-              // Get User information from Auth0
+        // Get User information from Auth0
 
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
