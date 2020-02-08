@@ -49,11 +49,18 @@ namespace WebMVCAuth0.Controllers
         return View();
         }
 
-        [Authorize("read:messages")]
-        public IActionResult Scoped()
+        [Authorize(Roles = "Editor")]
+        public IActionResult Editor()
         {
             ViewData["Message"] = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.";
            return View();
+        }
+
+        [Authorize(Roles = "guest")]
+        public IActionResult Guest()
+        {
+            ViewData["Message"] = "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.";
+            return View();
         }
 
         // This is a helper action. It allows you to easily view all the claims of the token.
@@ -66,7 +73,7 @@ namespace WebMVCAuth0.Controllers
                     c.Value
                 });
             ViewData["Message"] = Json(c.ToList()).ToString();
-            return View();
+            return Json(c);
         }
 
               // Get User information from Auth0

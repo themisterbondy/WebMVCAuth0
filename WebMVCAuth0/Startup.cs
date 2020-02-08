@@ -66,6 +66,8 @@ namespace WebMVCAuth0
                 // Configure the scope
                 options.Scope.Add("openid");
 
+                options.Scope.Add("profile");
+
                 // Set the callback path, so Auth0 will call back to http://localhost:3000/callback
                 // Also ensure that you have added the URL as an Allowed Callback URL in your Auth0 dashboard
                 options.CallbackPath = new PathString("/callback");
@@ -76,23 +78,24 @@ namespace WebMVCAuth0
                 // Saves tokens to the AuthenticationProperties
                 options.SaveTokens = true;
 
-                options.Events = new OpenIdConnectEvents
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    OnRedirectToIdentityProvider = context =>
-                    {
-                        context.ProtocolMessage.SetParameter("audience", "5e3c3e61e3c6f709a11bf903");
-
-                        return Task.FromResult(0);
-                    }
+                    NameClaimType = "name",
+                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/roles"
                 };
 
                 options.Events = new OpenIdConnectEvents
                 {
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        context.ProtocolMessage.SetParameter("audience", @"https://demo/api");
+                        return Task.FromResult(0);
+                    },
                     // handle the logout redirection
                     OnRedirectToIdentityProviderForSignOut = (context) =>
                     {
                         var logoutUri =
-                          $"https://contentappco.eu.auth0.com/v2/logout?client_id=Kmqrglz32JIS1GBZfg3beJ3k2FBH77Sa";
+                          $"https://{Configuration["Auth0:Domain"]}/v2/logout?client_id={Configuration["Auth0:ClientId"]}";
 
                         var postLogoutUri = context.Properties.RedirectUri;
                         if (!string.IsNullOrEmpty(postLogoutUri))
